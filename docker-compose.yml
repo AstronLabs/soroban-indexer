@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-soroban_indexer}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-soroban_indexer}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  ingester:
+    build:
+      context: .
+      dockerfile: Dockerfile.ingester
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-soroban_indexer}
+      - RPC_URL=${RPC_URL:-https://rpc-futurenet.stellar.org:443}
+      - NETWORK_PASSPHRASE=${NETWORK_PASSPHRASE:-Test SDF Future Network ; October 2022}
+      - START_LEDGER=${START_LEDGER:-0}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-soroban_indexer}
+      - PORT=3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
