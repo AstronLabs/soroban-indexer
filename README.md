@@ -8,6 +8,13 @@
 
 > **Production-grade historical data indexer for Soroban smart contracts on the Stellar blockchain.**
 
+### 🌐 Live Deployments
+
+- **Frontend Dashboard:** [https://soroban-indexer-dashboard.vercel.app](https://soroban-indexer-dashboard.vercel.app)
+- **Deployed Testnet Contract:** [`CDMMNZP6ATCZ4JAULMDYYL4S37WKFJNQEB7O7JJAOD7527BMWJYNI57J`](https://stellar.expert/explorer/testnet/contract/CDMMNZP6ATCZ4JAULMDYYL4S37WKFJNQEB7O7JJAOD7527BMWJYNI57J)
+- **Network:** Stellar Testnet
+
+
 ## 🚨 The Problem
 
 Soroban's RPC nodes are optimized for real-time state access and transaction submission. However, when building dApps, analytics platforms, or block explorers, developers face a critical gap: **querying historical data**. 
