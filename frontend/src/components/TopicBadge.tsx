@@ -1,0 +1,1 @@
+// Topic badge component
