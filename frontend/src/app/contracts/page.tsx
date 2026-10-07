@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { fetchContracts, Contract } from "@/lib/api";
 import { FileCode, Activity } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 export default function ContractsPage() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -38,7 +39,7 @@ export default function ContractsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {contracts.map((contract) => (
-            <div key={contract.id} className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:bg-gray-800/50 transition-colors cursor-pointer shadow-sm group">
+            <div key={contract.id}  className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:bg-gray-800/50 transition-colors cursor-pointer shadow-sm group">
               <div className="flex items-start justify-between mb-4">
                 <div className="h-10 w-10 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                   <FileCode className="h-5 w-5" />
@@ -50,11 +51,17 @@ export default function ContractsPage() {
               </div>
               
               <div className="mb-4">
-                <h3 className="text-gray-400 text-xs font-medium mb-1">Contract ID</h3>
-                <p className="font-mono text-gray-200 text-sm break-all">
-                  {contract.id.substring(0, 12)}...{contract.id.substring(contract.id.length - 8)}
-                </p>
-              </div>
+  <h3 className="text-gray-400 text-xs font-medium mb-1">Contract ID</h3>
+
+  <div className="flex items-center gap-2">
+    <p className="font-mono text-gray-200 text-sm break-all flex-1">
+      {contract.id.substring(0, 12)}...
+      {contract.id.substring(contract.id.length - 8)}
+    </p>
+
+    <CopyButton value={contract.id} />
+  </div>
+</div>
               
               <div className="grid grid-cols-2 gap-4 text-xs text-gray-400 border-t border-gray-800 pt-4">
                 <div>

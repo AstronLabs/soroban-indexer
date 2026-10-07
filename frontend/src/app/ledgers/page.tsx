@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { fetchLedgers, Ledger } from "@/lib/api";
 import { Layers, Clock } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 export default function LedgersPage() {
   const [ledgers, setLedgers] = useState<Ledger[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   useEffect(() => {
     const loadLedgers = async () => {
@@ -38,7 +39,7 @@ export default function LedgersPage() {
         </div>
         <div className="flex items-center text-sm text-gray-400 bg-gray-900 px-4 py-2 rounded-lg border border-gray-800">
           <Clock className="w-4 h-4 mr-2 text-emerald-500" />
-          Auto-updating • Last: {lastRefresh.toLocaleTimeString()}
+          Auto-updating • Last: {lastRefresh ? lastRefresh.toLocaleTimeString() : "--"}
         </div>
       </div>
 
@@ -75,10 +76,14 @@ export default function LedgersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-mono text-xs text-gray-400 truncate max-w-[200px] sm:max-w-xs md:max-w-md inline-block">
-                        {ledger.hash}
-                      </span>
-                    </td>
+  <div className="flex items-center gap-1">
+    <span className="font-mono text-xs text-gray-400 truncate w-[200px] sm:w-xs md:w-md">
+      {ledger.hash}
+    </span>
+
+    <CopyButton value={ledger.hash} />
+  </div>
+</td>
                     <td className="px-6 py-4 text-right">
                       <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
                         ledger.eventsCount > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'text-gray-500'
