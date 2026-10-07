@@ -17,6 +17,7 @@ pub struct SorobanEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct LedgerInfo {
     pub sequence: i64,
     pub hash: String,
@@ -27,6 +28,7 @@ pub struct LedgerInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct ContractInfo {
     pub contract_id: String,
     pub first_seen_ledger: i64,

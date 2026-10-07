@@ -1,5 +1,5 @@
-use super::models::{ContractInfo, IngesterState, LedgerInfo, SorobanEvent};
-use sqlx::{PgPool, Row};
+use super::models::{IngesterState, LedgerInfo, SorobanEvent};
+use sqlx::PgPool;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -52,6 +52,7 @@ impl Repository {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn insert_ledger_info(&self, info: &LedgerInfo) -> Result<(), DbError> {
         sqlx::query(
             r#"
@@ -72,6 +73,7 @@ impl Repository {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn upsert_contract_info(
         &self,
         contract_id: &str,
