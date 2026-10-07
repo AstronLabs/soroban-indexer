@@ -24,6 +24,7 @@ struct JsonRpcRequest {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct JsonRpcResponse<T> {
     jsonrpc: String,
     id: u64,
@@ -32,6 +33,7 @@ struct JsonRpcResponse<T> {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct RpcErrorObj {
     code: i64,
     message: String,
@@ -39,6 +41,7 @@ struct RpcErrorObj {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct EventResponse {
     pub latest_ledger: u32,
     pub events: Vec<RpcEvent>,
@@ -46,6 +49,7 @@ pub struct EventResponse {
 
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)]
 pub struct RpcEvent {
     pub type_: String,
     pub ledger: u32,
@@ -93,12 +97,10 @@ impl SorobanRpcClient {
 
             match self.client.post(&self.url).json(&req).send().await {
                 Ok(response) => {
-                    if !response.status().is_success() {
-                        if retries < max_retries {
-                            retries += 1;
-                            tokio::time::sleep(Duration::from_millis(1000 * retries)).await;
-                            continue;
-                        }
+                    if !response.status().is_success() && retries < max_retries {
+                        retries += 1;
+                        tokio::time::sleep(Duration::from_millis(1000 * retries)).await;
+                        continue;
                     }
                     let rpc_res: JsonRpcResponse<T> = response.json().await?;
                     if let Some(err) = rpc_res.error {
