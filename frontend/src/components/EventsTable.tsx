@@ -57,9 +57,14 @@ export default function EventsTable({ events, isLoading }: EventsTableProps) {
                   className={`hover:bg-gray-800/50 transition-colors cursor-pointer ${expandedRow === event.id ? 'bg-gray-800/30' : ''}`}
                   onClick={() => toggleRow(event.id)}
                 >
-                  <td className="px-6 py-4">
-                    <span className="font-mono text-xs text-gray-300">{event.id}</span>
-                  </td>
+                 <td className="px-6 py-4">
+  <div className="flex items-center gap-2">
+    <span className="font-mono text-xs text-gray-300 truncate max-w-[150px]">
+      {event.id}
+    </span>
+    <CopyButton value={event.id} />
+  </div>
+</td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
                       event.type === 'system' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 
@@ -69,10 +74,18 @@ export default function EventsTable({ events, isLoading }: EventsTableProps) {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-mono text-xs text-gray-400 truncate max-w-[120px] inline-block" title={event.contractId}>
-                      {event.contractId.substring(0, 10)}...{event.contractId.substring(event.contractId.length - 4)}
-                    </span>
-                  </td>
+  <div className="flex items-center gap-2">
+    <span
+      className="font-mono text-xs text-gray-400 truncate max-w-[120px] inline-block"
+      title={event.contractId}
+    >
+      {event.contractId.substring(0, 10)}...
+      {event.contractId.substring(event.contractId.length - 4)}
+    </span>
+
+    <CopyButton value={event.contractId} />
+  </div>
+</td>
                   <td className="px-6 py-4 text-sm text-gray-300">{event.ledger.toLocaleString()}</td>
                   <td className="px-6 py-4 text-sm text-gray-400">
                     {new Date(event.ledgerClosedAt).toLocaleString()}
@@ -115,4 +128,5 @@ export default function EventsTable({ events, isLoading }: EventsTableProps) {
   );
 }
 
-import React from "react";
+import React from "react";import CopyButton from "./CopyButton";
+
