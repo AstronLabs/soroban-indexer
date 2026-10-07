@@ -13,7 +13,12 @@ pub struct RealtimeIngester {
 }
 
 impl RealtimeIngester {
-    pub fn new(rpc_client: SorobanRpcClient, repo: Repository, poll_interval_ms: u64, batch_size: u32) -> Self {
+    pub fn new(
+        rpc_client: SorobanRpcClient,
+        repo: Repository,
+        poll_interval_ms: u64,
+        batch_size: u32,
+    ) -> Self {
         Self {
             rpc_client,
             repo,
@@ -37,7 +42,11 @@ impl IngesterService for RealtimeIngester {
         }
 
         loop {
-            match self.rpc_client.get_events(start_ledger, self.batch_size, current_cursor.clone()).await {
+            match self
+                .rpc_client
+                .get_events(start_ledger, self.batch_size, current_cursor.clone())
+                .await
+            {
                 Ok(response) => {
                     if !response.events.is_empty() {
                         let mut db_events = Vec::new();
@@ -54,8 +63,19 @@ impl IngesterService for RealtimeIngester {
                         if let Err(e) = self.repo.insert_events(&db_events).await {
                             warn!("Failed to insert events: {}", e);
                         } else {
-                            info!("Ingested {} events up to ledger {}", db_events.len(), last_ledger);
-                            let _ = self.repo.update_ingester_state("realtime", last_ledger as i64, current_cursor.clone()).await;
+                            info!(
+                                "Ingested {} events up to ledger {}",
+                                db_events.len(),
+                                last_ledger
+                            );
+                            let _ = self
+                                .repo
+                                .update_ingester_state(
+                                    "realtime",
+                                    last_ledger as i64,
+                                    current_cursor.clone(),
+                                )
+                                .await;
                             start_ledger = last_ledger;
                         }
                     }

@@ -68,11 +68,18 @@ impl SorobanRpcClient {
     pub fn new(url: String) -> Self {
         Self {
             url,
-            client: Client::builder().timeout(Duration::from_secs(30)).build().unwrap(),
+            client: Client::builder()
+                .timeout(Duration::from_secs(30))
+                .build()
+                .unwrap(),
         }
     }
 
-    async fn call<T: for<'de> Deserialize<'de>>(&self, method: &str, params: Value) -> Result<T, RpcError> {
+    async fn call<T: for<'de> Deserialize<'de>>(
+        &self,
+        method: &str,
+        params: Value,
+    ) -> Result<T, RpcError> {
         let mut retries = 0;
         let max_retries = 5;
 
@@ -97,14 +104,19 @@ impl SorobanRpcClient {
                     if let Some(err) = rpc_res.error {
                         return Err(RpcError::JsonRpc(err.message));
                     }
-                    return rpc_res.result.ok_or_else(|| RpcError::Parse("Missing result".into()));
+                    return rpc_res
+                        .result
+                        .ok_or_else(|| RpcError::Parse("Missing result".into()));
                 }
                 Err(e) => {
                     if retries >= max_retries {
                         return Err(RpcError::Reqwest(e));
                     }
                     retries += 1;
-                    warn!("RPC request failed, retrying ({}/{})...", retries, max_retries);
+                    warn!(
+                        "RPC request failed, retrying ({}/{})...",
+                        retries, max_retries
+                    );
                     tokio::time::sleep(Duration::from_millis(500 * retries)).await;
                 }
             }
@@ -123,7 +135,10 @@ impl SorobanRpcClient {
         });
 
         if let Some(c) = cursor {
-            params.as_object_mut().unwrap().insert("cursor".into(), json!(c));
+            params
+                .as_object_mut()
+                .unwrap()
+                .insert("cursor".into(), json!(c));
         }
 
         self.call("getEvents", params).await

@@ -59,7 +59,7 @@ impl Repository {
             (sequence, hash, timestamp, tx_count, operation_count, closed_at)
             VALUES ($1, $2, $3, $4, $5, $6)
             ON CONFLICT (sequence) DO NOTHING
-            "#
+            "#,
         )
         .bind(info.sequence)
         .bind(&info.hash)
@@ -72,7 +72,11 @@ impl Repository {
         Ok(())
     }
 
-    pub async fn upsert_contract_info(&self, contract_id: &str, ledger: i64) -> Result<(), DbError> {
+    pub async fn upsert_contract_info(
+        &self,
+        contract_id: &str,
+        ledger: i64,
+    ) -> Result<(), DbError> {
         sqlx::query(
             r#"
             INSERT INTO contract_info (contract_id, first_seen_ledger, last_event_ledger, event_count, created_at, updated_at)
@@ -100,7 +104,12 @@ impl Repository {
         Ok(state)
     }
 
-    pub async fn update_ingester_state(&self, mode: &str, last_ingested_ledger: i64, last_cursor: Option<String>) -> Result<(), DbError> {
+    pub async fn update_ingester_state(
+        &self,
+        mode: &str,
+        last_ingested_ledger: i64,
+        last_cursor: Option<String>,
+    ) -> Result<(), DbError> {
         sqlx::query(
             r#"
             INSERT INTO ingester_state (mode, last_ingested_ledger, last_cursor, updated_at)
@@ -109,7 +118,7 @@ impl Repository {
                 last_ingested_ledger = $2,
                 last_cursor = $3,
                 updated_at = NOW()
-            "#
+            "#,
         )
         .bind(mode)
         .bind(last_ingested_ledger)

@@ -10,7 +10,11 @@ pub enum IngestionMode {
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Config {
-    #[arg(long, env = "STELLAR_RPC_URL", default_value = "https://soroban-testnet.stellar.org:443")]
+    #[arg(
+        long,
+        env = "STELLAR_RPC_URL",
+        default_value = "https://soroban-testnet.stellar.org:443"
+    )]
     pub stellar_rpc_url: String,
 
     #[arg(long, env = "DATABASE_URL")]

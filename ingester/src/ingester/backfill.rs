@@ -12,7 +12,12 @@ pub struct BackfillIngester {
 }
 
 impl BackfillIngester {
-    pub fn new(rpc_client: SorobanRpcClient, repo: Repository, start_ledger: u32, batch_size: u32) -> Self {
+    pub fn new(
+        rpc_client: SorobanRpcClient,
+        repo: Repository,
+        start_ledger: u32,
+        batch_size: u32,
+    ) -> Self {
         Self {
             rpc_client,
             repo,
@@ -25,7 +30,10 @@ impl BackfillIngester {
 #[async_trait]
 impl IngesterService for BackfillIngester {
     async fn run(&self) -> Result<(), Box<dyn std::error::Error>> {
-        info!("Starting backfill ingester from ledger {}", self.start_ledger);
+        info!(
+            "Starting backfill ingester from ledger {}",
+            self.start_ledger
+        );
 
         let latest_ledger = self.rpc_client.get_latest_ledger().await?;
         let mut current_ledger = self.start_ledger;
@@ -38,7 +46,11 @@ impl IngesterService for BackfillIngester {
         }
 
         while current_ledger < latest_ledger {
-            match self.rpc_client.get_events(current_ledger, self.batch_size, current_cursor.clone()).await {
+            match self
+                .rpc_client
+                .get_events(current_ledger, self.batch_size, current_cursor.clone())
+                .await
+            {
                 Ok(response) => {
                     if response.events.is_empty() {
                         current_ledger += 1;
@@ -58,8 +70,19 @@ impl IngesterService for BackfillIngester {
                     if let Err(e) = self.repo.insert_events(&db_events).await {
                         warn!("Failed to insert backfill events: {}", e);
                     } else {
-                        info!("Backfilled {} events up to ledger {}", db_events.len(), current_ledger);
-                        let _ = self.repo.update_ingester_state("backfill", current_ledger as i64, current_cursor.clone()).await;
+                        info!(
+                            "Backfilled {} events up to ledger {}",
+                            db_events.len(),
+                            current_ledger
+                        );
+                        let _ = self
+                            .repo
+                            .update_ingester_state(
+                                "backfill",
+                                current_ledger as i64,
+                                current_cursor.clone(),
+                            )
+                            .await;
                     }
                 }
                 Err(e) => {
